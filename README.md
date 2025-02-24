@@ -32,8 +32,8 @@ Siga os passos abaixo para configurar o projeto:
 1. Clone o repositório:
 
    ```bash
-   git clone https://github.com/seu-usuario/calculadora-frete-cep.git
-   cd calculadora-frete-cep
+   git clone https://github.com/seu-usuario/calculo-frete-cep.git
+   cd calculo-frete-cep
    ```
 
 2. Instale as dependências:
