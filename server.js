@@ -25,3 +25,24 @@ const formatCep = (cep) => {
 const isValidCep = (cep) => {
   return /^\d{5}-?\d{3}$/.test(cep);
 };
+
+const fetchLocationFromCep = async (cep) => {
+  const fetch = (await import("node-fetch")).default;
+  const cleanCep = cep.replace("-", "");
+  const viaCepResponse = await fetch(
+    `https://viacep.com.br/ws/${cleanCep}/json/`
+  );
+  const viaCepData = await viaCepResponse.json();
+
+  if (viaCepData.erro) {
+    throw new Error("CEP não encontrado");
+  }
+
+  return {
+    cep,
+    logradouro: viaCepData.logradouro,
+    bairro: viaCepData.bairro,
+    localidade: viaCepData.localidade,
+    uf: viaCepData.uf,
+  };
+};
