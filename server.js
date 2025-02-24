@@ -63,3 +63,37 @@ const calculateShippingCost = (distanceKm) => {
   if (distanceKm <= 50) return 50.0;
   return 50.0 + (distanceKm - 50) * 2.0;
 };
+
+app.get('/calcular-frete', async (req, res) => {
+  const { originCep, destinationCep } = req.query;
+
+  const formattedOriginCep = formatCep(originCep);
+  const formattedDestinationCep = formatCep(destinationCep);
+
+  if (!isValidCep(formattedOriginCep)) {
+    return res.status(400).json({ error: "CEP de origem inválido" });
+  }
+  if (!isValidCep(formattedDestinationCep)) {
+    return res.status(400).json({ error: "CEP de destino inválido" });
+  }
+
+  try {
+    const originLocation = await fetchLocationFromCep(formattedOriginCep);
+    const destinationLocation = await fetchLocationFromCep(formattedDestinationCep);
+
+    const from = [originLocation.lng, originLocation.lat];
+    const to = [destinationLocation.lng, destinationLocation.lat];
+
+    const distanceKm = distance(from, to, { units: "kilometers" });
+    const shippingCost = calculateShippingCost(distanceKm);
+
+    res.send({
+      origin: originLocation,
+      destination: destinationLocation,
+      distance: Math.round(distanceKm * 100) / 100,
+      cost: Math.round(shippingCost * 100) / 100,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
