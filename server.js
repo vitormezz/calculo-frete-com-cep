@@ -1,4 +1,5 @@
 // app.js
+const { distance } = require("@turf/turf");
 const express = require("express");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -64,7 +65,7 @@ const calculateShippingCost = (distanceKm) => {
   return 50.0 + (distanceKm - 50) * 2.0;
 };
 
-app.get('/calcular-frete', async (req, res) => {
+app.get("/calcular-frete", async (req, res) => {
   const { originCep, destinationCep } = req.query;
 
   const formattedOriginCep = formatCep(originCep);
@@ -79,7 +80,9 @@ app.get('/calcular-frete', async (req, res) => {
 
   try {
     const originLocation = await fetchLocationFromCep(formattedOriginCep);
-    const destinationLocation = await fetchLocationFromCep(formattedDestinationCep);
+    const destinationLocation = await fetchLocationFromCep(
+      formattedDestinationCep
+    );
 
     const from = [originLocation.lng, originLocation.lat];
     const to = [destinationLocation.lng, destinationLocation.lat];
