@@ -27,9 +27,11 @@ const isValidCep = (cep) => {
 };
 
 const fetchLocationFromCep = async (cep) => {
-  const fetch = (await import('node-fetch')).default;
+  const fetch = (await import("node-fetch")).default;
   const cleanCep = cep.replace("-", "");
-  const viaCepResponse = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+  const viaCepResponse = await fetch(
+    `https://viacep.com.br/ws/${cleanCep}/json/`
+  );
   const viaCepData = await viaCepResponse.json();
 
   if (viaCepData.erro) {
@@ -39,7 +41,9 @@ const fetchLocationFromCep = async (cep) => {
   const address = `${viaCepData.logradouro}, ${viaCepData.localidade}, ${viaCepData.uf}, Brazil`;
   const openCageApiKey = process.env.OPENCAGE_API_KEY;
   const openCageResponse = await fetch(
-    `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${openCageApiKey}&countrycode=br`
+    `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+      address
+    )}&key=${openCageApiKey}&countrycode=br`
   );
   const openCageData = await openCageResponse.json();
 
@@ -53,4 +57,9 @@ const fetchLocationFromCep = async (cep) => {
     lng: openCageData.results[0].geometry.lng,
     display_name: `${viaCepData.logradouro}, ${viaCepData.bairro}, ${viaCepData.localidade} - ${viaCepData.uf}, ${viaCepData.cep}`,
   };
+};
+const calculateShippingCost = (distanceKm) => {
+  if (distanceKm <= 10) return 10.0;
+  if (distanceKm <= 50) return 50.0;
+  return 50.0 + (distanceKm - 50) * 2.0;
 };
